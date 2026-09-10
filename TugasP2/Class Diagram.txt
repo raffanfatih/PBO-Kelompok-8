@@ -1,0 +1,60 @@
++------------------------+          +---------------------------+
+|       GenreBuku        |          |           Buku            |
++------------------------+          +---------------------------+
+| - idGenre: int         | 1      * | - idBuku: int             |
+| - namaGenre: String    |----------| - judul: String           |
+| - deskripsi: String    |          | - pengarang: String       |
++------------------------+          | - tahunTerbit: int        |
+| + getIdGenre()         |          | - stok: int               |
+| + getNamaGenre()       |          | - genre: GenreBuku        |
+| + getDeskripsi()       |          +---------------------------+
+| + setNamaGenre()       |          | + pinjamBuku(): boolean   |
+| + setDeskripsi()       |          | + kembaliBuku(): void     |
++------------------------+          +---------------------------+
+                                                  ^
+                                                  |
+                                                  | * (0..*)
+                                                  |
+                                                  | 1
+                                    +---------------------------+
+                                    |          Member           |
+                                    +---------------------------+
+                                    | - idMember: int           |
+                                    | - nama: String            |
+                                    | - email: String           |
+                                    | - telepon: String         |
+                                    | - tanggalDaftar: String   |
+                                    | - bukuPinjaman: List<Buku>|
+                                    +---------------------------+
+                                    | + pinjamBuku(Buku)        |
+                                    | + kembaliBuku(Buku)       |
+                                    | + lihatBukuPinjaman()     |
+                                    +---------------------------+
+
+
+<<abstract>>
+                          +-------------------------+
+                          |          Buku           |
+                          +-------------------------+
+                          | # idBuku: int           |
+                          | # judul: String         |
+                          | # pengarang: String     |
+                          | # tahunTerbit: int      |
+                          | # genre: GenreBuku      |
+                          +-------------------------+
+                          | + getJudul(): String    |
+                          | + abstract pinjamBuku() |
+                          | + abstract kembaliBuku()|
+                          +-------------------------+
+                                      ^
+                                      | <<extends>>
+                 +--------------------+--------------------+
+                 |                                         |
++---------------------------------+       +---------------------------------+
+|           BukuFisik             |       |              EBook              |
++---------------------------------+       +---------------------------------+
+| - stok: int                     |       | - linkDownload: String          |
++---------------------------------+       +---------------------------------+
+| + pinjamBuku(): boolean         |       | + pinjamBuku(): boolean         |
+| + kembaliBuku(): void           |       | + kembaliBuku(): void           |
++---------------------------------+       +---------------------------------+
