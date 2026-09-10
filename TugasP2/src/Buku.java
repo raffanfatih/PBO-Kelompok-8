@@ -3,43 +3,29 @@ public class Buku {
     private String judul;
     private String pengarang;
     private int tahunTerbit;
-    private int stok;
     private GenreBuku genre;
 
-    public Buku(int idBuku, String judul, String pengarang, int tahunTerbit, int stok, GenreBuku genre) {
+    //constructor untuk menginisialisasi nilai awal
+    public Buku(int idBuku, String judul, String pengarang, int tahunTerbit, GenreBuku genre) {
         this.idBuku = idBuku;
         this.judul = judul;
         this.pengarang = pengarang;
         this.tahunTerbit = tahunTerbit;
-        this.stok = stok;
         this.genre = genre;
     }
 
+    //mengambil nilai data
     public int getIdBuku() { return idBuku; }
     public String getJudul() { return judul; }
     public String getPengarang() { return pengarang; }
     public int getTahunTerbit() { return tahunTerbit; }
-    public int getStok() { return stok; }
     public GenreBuku getGenre() { return genre; }
 
-    public void setStok(int stok) { this.stok = stok; }
-    public void setGenre(GenreBuku genre) { this.genre = genre; }
-
-    public boolean pinjamBuku() {
-        if (stok > 0) {
-            stok--;
-            return true;
-        }
-        return false;
-    }
-
-    public void kembaliBuku() {
-        stok++;
-    }
-
-    @Override
-    public String toString() {
-        return "Buku [ID=" + idBuku + "] " + judul + " - " + pengarang + 
-               " | Stok: " + stok + " | " + genre.getNamaGenre();
+    //menampilkan identitas
+    public void tampilkanInfo() {
+        System.out.println("ID Buku   : " + idBuku);
+        System.out.println("Judul     : " + judul);
+        System.out.println("Pengarang : " + pengarang);
+        System.out.println("Genre     : " + genre.getNamaGenre());
     }
 }

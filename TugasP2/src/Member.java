@@ -30,17 +30,12 @@ public class Member {
     public void setTelepon(String telepon) { this.telepon = telepon; }
 
     public void pinjamBuku(Buku buku) {
-        if (buku.pinjamBuku()) {
-            bukuPinjaman.add(buku);
-            System.out.println(nama + " berhasil meminjam: " + buku.getJudul());
-        } else {
-            System.out.println("Maaf, stok " + buku.getJudul() + " sedang habis!");
-        }
+        bukuPinjaman.add(buku);
+        System.out.println(nama + " berhasil meminjam: " + buku.getJudul());
     }
 
     public void kembaliBuku(Buku buku) {
         if (bukuPinjaman.remove(buku)) {
-            buku.kembaliBuku();
             System.out.println(nama + " berhasil mengembalikan: " + buku.getJudul());
         } else {
             System.out.println("Buku ini tidak ada di daftar pinjaman " + nama);

@@ -1,44 +1,44 @@
 public class Main {
     public static void main(String[] args) {
-        System.out.println("SISTEM MANAJEMEN PERPUSTAKAAN");
+        System.out.println("\nSISTEM MANAJEMEN PERPUSTAKAAN");
 
         // 1. Instansiasi Objek GenreBuku
-        GenreBuku[] daftarGenre = {
-            new GenreBuku(1, "Fiksi", "Buku cerita imajinatif"),
-            new GenreBuku(2, "Teknologi", "Buku ilmu komputer dan pemrograman")
-        };
-
+        GenreBuku genre1 = new GenreBuku(1, "Fiksi", "Buku cerita imajinatif");
+        GenreBuku genre2 = new GenreBuku(2, "Teknologi", "Buku ilmu komputer dan pemrograman");
+        
         // 2. Instansiasi Objek Buku dengan relasi Genre
-        Buku[] daftarBuku = {
-            new Buku(101, "Harry Potter", "J.K. Rowling", 1998, 2, daftarGenre[0]),
-            new Buku(102, "Clean Code", "Robert C. Martin", 2008, 1, daftarGenre[1]),
-            new Buku(103, "Design Patterns", "Gang of Four", 1994, 3, daftarGenre[1])
-        };
+        BukuFisik bukuFisik1 = new BukuFisik(101, "Harry Potter", "J.K. Rowling", 1998, genre1, 2);
+        BukuFisik bukuFisik2 = new BukuFisik(102, "Clean Code", "Robert C. Martin", 2008, genre2,  1);            
+        EBook eBook1 = new EBook(103, "Design Patterns", "Gang of Four", 1994, genre2, "ipb.link/kelompok-8");
 
         // 3. Instansiasi Objek Member
         Member member1 = new Member(1001, "Azhar", "azhar78@gmail.com", "081234567890", "2026-09-02");
         Member member2 = new Member(1002, "Raihan", "mraihaner@gmail.com", "080987654321", "2026-09-03");
 
         // 4. Proses Transaksi (Simulasi)
-        System.out.println(">>> SIMULASI PEMINJAMAN");
-        member1.pinjamBuku(daftarBuku[0]);
-        member1.pinjamBuku(daftarBuku[1]);
-        
-        member2.pinjamBuku(daftarBuku[1]);
-        member2.pinjamBuku(daftarBuku[2]);
-
-        // 5. Lihat Data Pinjaman
-        member1.lihatBukuPinjaman();
-        member2.lihatBukuPinjaman();
-
-        // 6. Proses Pengembalian
-        System.out.println("\n>>> SIMULASI PENGEMBALIAN");
-        member1.kembaliBuku(daftarBuku[1]); 
-
-        // 7. Lihat Status Stok Buku Terakhir
-        System.out.println("\n>>> STATUS STOK BUKU AKHIR");
-        for (Buku b : daftarBuku) {
-            System.out.println(b);
+        System.out.println("\n--- SIMULASI PEMINJAMAN ---");
+        if (bukuFisik1.pinjam()){
+            member1.pinjamBuku(bukuFisik1);
         }
+
+        if (bukuFisik1.pinjam()){
+            member2.pinjamBuku(bukuFisik1);
+        } else {
+            System.out.println("Maaf, stok " + bukuFisik1.getJudul() + " sedang kosong!");
+        }
+
+        System.out.println("");
+        if (eBook1.pinjam()){
+            member1.pinjamBuku(eBook1);
+            member2.pinjamBuku(eBook1);
+        }
+
+        System.out.println("\n--- STATUS BUKU DI PERPUSTAKAAN ---");
+        bukuFisik1.tampilkanInfo(); 
+        System.out.println("");
+        bukuFisik2.tampilkanInfo(); 
+        System.out.println("");
+        eBook1.tampilkanInfoDigital(); 
+        // System.out.println("");
     }
 }
