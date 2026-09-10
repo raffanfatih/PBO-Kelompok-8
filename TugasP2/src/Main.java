@@ -39,6 +39,6 @@ public class Main {
         bukuFisik2.tampilkanInfo(); 
         System.out.println("");
         eBook1.tampilkanInfoDigital(); 
-        // System.out.println("");
+        System.out.println("");
     }
 }
