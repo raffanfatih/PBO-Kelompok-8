@@ -13,8 +13,13 @@ public class GenreBuku {
     public String getNamaGenre() { return namaGenre; }
     public String getDeskripsi() { return deskripsi; }
 
-    public void setNamaGenre(String namaGenre) { this.namaGenre = namaGenre; }
-    public void setDeskripsi(String deskripsi) { this.deskripsi = deskripsi; }
+    public void setNamaGenre(String namaGenre) { 
+        this.namaGenre = namaGenre; 
+    }
+    
+    public void setDeskripsi(String deskripsi) { 
+        this.deskripsi = deskripsi; 
+    }
 
     @Override
     public String toString() {
