@@ -9,12 +9,18 @@ public class EBook extends Buku {
         this.linkDownload = linkDownload;
     }
 
-    public String getLinkDownload() { return linkDownload; }
+    public String getLinkDownload() { 
+        return linkDownload; 
+    }
 
     //fungsi khusus untuk simulasi meminjam EBook
+    @Override
     public boolean pinjam() {
         return true; 
     }
+
+    @Override
+    public void kembali() {}
 
     //menampilkan info spesifik dengan memanggil data dari Buku.java menggunakan getter
     public void tampilkanInfoDigital() {

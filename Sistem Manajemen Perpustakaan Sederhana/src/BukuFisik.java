@@ -9,9 +9,12 @@ public class BukuFisik extends Buku {
         this.stok = stok;
     }
 
-    public int getStok() { return stok; }
+    public int getStok() { 
+        return stok; 
+    }
 
     //fungsi untuk simulasi meminjam buku fisik
+    @Override
     public boolean pinjam() {
         if (stok > 0) {
             stok--;
@@ -21,6 +24,7 @@ public class BukuFisik extends Buku {
     }
 
     //fungsi untuk mengembalikan buku fisik
+    @Override
     public void kembali() {
         stok++;
     }

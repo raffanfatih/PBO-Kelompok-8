@@ -1,4 +1,4 @@
-public class Buku {
+public abstract class Buku implements DapatPinjamBuku {
     private int idBuku;
     private String judul;
     private String pengarang;

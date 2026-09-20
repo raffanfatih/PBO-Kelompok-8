@@ -7,8 +7,7 @@ public class Main {
         GenreBuku genre2 = new GenreBuku(2, "Teknologi", "Buku ilmu komputer dan pemrograman");
         
         // 2. Instansiasi Objek Buku dengan relasi Genre
-        BukuFisik bukuFisik1 = new BukuFisik(101, "Harry Potter", "J.K. Rowling", 1998, genre1, 2);
-        BukuFisik bukuFisik2 = new BukuFisik(102, "Clean Code", "Robert C. Martin", 2008, genre2,  1);            
+        BukuFisik bukuFisik1 = new BukuFisik(101, "Harry Potter", "J.K. Rowling", 1998, genre1, 2);           
         EBook eBook1 = new EBook(103, "Design Patterns", "Gang of Four", 1994, genre2, "ipb.link/kelompok-8");
 
         // 3. Instansiasi Objek Member
@@ -21,23 +20,20 @@ public class Main {
             member1.pinjamBuku(bukuFisik1);
         }
 
-        if (bukuFisik1.pinjam()){
-            member2.pinjamBuku(bukuFisik1);
-        } else {
-            System.out.println("Maaf, stok " + bukuFisik1.getJudul() + " sedang kosong!");
-        }
-
-        System.out.println("");
         if (eBook1.pinjam()){
-            member1.pinjamBuku(eBook1);
             member2.pinjamBuku(eBook1);
         }
 
+        System.out.println("\n--- SIMULASI PENGEMBALIAN ---");
+        member1.kembaliBuku(bukuFisik1); 
+        bukuFisik1.kembali();
+
         System.out.println("\n--- STATUS BUKU DI PERPUSTAKAAN ---");
         bukuFisik1.tampilkanInfo(); 
-        System.out.println("");
-        bukuFisik2.tampilkanInfo(); 
-        System.out.println("");
+        bukuFisik1.tampilkanInfoFisik(); 
+        System.out.println("\n");
+
+        eBook1.tampilkanInfo();
         eBook1.tampilkanInfoDigital(); 
         System.out.println("");
     }
