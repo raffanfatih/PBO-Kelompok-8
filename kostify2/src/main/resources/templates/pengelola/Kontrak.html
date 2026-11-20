@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: shell(~{::section})}">
+<body>
+<section>
+    <!-- Banner Peringatan Kontrak -->
+    <div class="warning-banner" th:if="${countAkanBerakhir > 0}">
+        <div style="display:flex; align-items:center; gap:14px;">
+            <div style="width:38px; height:38px; border-radius:50%; background:#F8E3B4; color:#B97515; display:flex; align-items:center; justify-content:center;">
+                <i class="fa-regular fa-clock"></i>
+            </div>
+            <div>
+                <div style="font-size:14px; font-weight:700; color:#6D450B;" th:text="${countAkanBerakhir} + ' kontrak akan berakhir dalam 30 hari'">3 kontrak akan berakhir dalam 30 hari</div>
+                <div style="font-size:12.5px; color:#966216;">Segera konfirmasi perpanjangan dengan penghuni terkait sebelum masa sewa habis.</div>
+            </div>
+        </div>
+        <a th:href="@{/pengelola/kontrak(status='Akan Berakhir')}" class="btn btn-outline" style="background:#FFF;">Tampilkan</a>
+    </div>
+
+    <div class="toolbar-row">
+        <form th:action="@{/pengelola/kontrak}" method="get" class="search-box">
+            <i class="fa-solid fa-magnifying-glass" style="color:var(--text-secondary);"></i>
+            <input type="text" name="q" th:value="${keyword}" placeholder="Cari penghuni atau nomor kamar">
+        </form>
+        <button class="btn btn-primary" onclick="openModal('modalBuatKontrak')">
+            <i class="fa-solid fa-plus"></i> Buat Kontrak
+        </button>
+    </div>
+
+    <div class="filter-pills">
+        <a th:href="@{/pengelola/kontrak(status='Semua')}" class="pill" th:classappend="${statusFilter == 'Semua'} ? 'active'">
+            Semua <span class="pill-count" th:text="${countSemua}">10</span>
+        </a>
+        <a th:href="@{/pengelola/kontrak(status='Aktif')}" class="pill" th:classappend="${statusFilter == 'Aktif'} ? 'active'">
+            Aktif <span class="pill-count" th:text="${countAktif}">6</span>
+        </a>
+        <a th:href="@{/pengelola/kontrak(status='Akan Berakhir')}" class="pill" th:classappend="${statusFilter == 'Akan Berakhir'} ? 'active'">
+            Akan Berakhir <span class="pill-count" th:text="${countAkanBerakhir}">3</span>
+        </a>
+        <a th:href="@{/pengelola/kontrak(status='Berakhir')}" class="pill" th:classappend="${statusFilter == 'Berakhir'} ? 'active'">
+            Berakhir <span class="pill-count" th:text="${countBerakhir}">1</span>
+        </a>
+    </div>
+
+    <div class="table-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Penghuni</th>
+                    <th>Kamar</th>
+                    <th>Mulai</th>
+                    <th>Berakhir</th>
+                    <th>Harga Sewa</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="k : ${daftarKontrak}">
+                    <td style="font-weight:600;" th:text="${k.penghuni.nama}">Nadia Safitri</td>
+                    <td th:text="${k.kamar.idKamar}">A05</td>
+                    <td th:text="${#temporals.format(k.tanggalMulai, 'dd MMM yyyy')}">21 Apr 2026</td>
+                    <td th:text="${#temporals.format(k.tanggalSelesai, 'dd MMM yyyy')}">21 Okt 2026</td>
+                    <td th:text="'Rp ' + ${#numbers.formatInteger(k.hargaSewa, 0, 'POINT')}">Rp 1.300.000</td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="${k.statusKontrak == 'Aktif'} ? 'badge-green' : (${k.statusKontrak == 'Akan Berakhir'} ? 'badge-amber' : 'badge-gray')"
+                              th:text="${k.statusKontrak}">Berakhir</span>
+                    </td>
+                    <td>
+                        <div class="action-group">
+                            <button type="button" class="icon-btn" title="Detail Kontrak"
+                                    th:data-nama="${k.penghuni.nama}"
+                                    th:data-kamar="${k.kamar.idKamar}"
+                                    th:data-mulai="${#temporals.format(k.tanggalMulai, 'dd MMM yyyy')}"
+                                    th:data-selesai="${#temporals.format(k.tanggalSelesai, 'dd MMM yyyy')}"
+                                    th:data-harga="${#numbers.formatInteger(k.hargaSewa, 0, 'POINT')}"
+                                    th:data-status="${k.statusKontrak}"
+                                    onclick="bukaDetailKontrak(this)">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                            <button type="button" class="icon-btn" title="Perpanjang Kontrak"
+                                    th:data-id="${k.idKontrak}"
+                                    th:data-nama="${k.penghuni.nama}"
+                                    th:data-kamar="${k.kamar.idKamar}"
+                                    th:data-selesai="${#temporals.format(k.tanggalSelesai, 'dd MMM yyyy')}"
+                                    onclick="bukaPerpanjangKontrak(this)">
+                                <i class="fa-solid fa-rotate-right"></i>
+                            </button>
+                            <form th:action="@{'/pengelola/kontrak/hapus/' + ${k.idKontrak}}" method="post" style="display:inline;" onsubmit="return confirm('Hapus kontrak ini?')">
+                                <button type="submit" class="icon-btn danger" title="Hapus"><i class="fa-regular fa-trash-can"></i></button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="table-footer" th:text="'Menampilkan ' + ${#lists.size(daftarKontrak)} + ' dari ' + ${countSemua} + ' data'"></div>
+    </div>
+
+    <!-- Modal Buat Kontrak Baru -->
+    <div id="modalBuatKontrak" class="modal-backdrop">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">Buat Kontrak Baru</h3>
+                <button class="icon-btn" onclick="closeModal('modalBuatKontrak')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form th:action="@{/pengelola/kontrak/simpan}" method="post">
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label class="form-label">Penghuni</label>
+                        <select name="idPenghuni" class="form-control" required>
+                            <option value="">Pilih penghuni aktif</option>
+                            <option th:each="p : ${daftarPenghuni}" th:value="${p.idPenghuni}" th:text="${p.nama}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Kamar</label>
+                        <select name="idKamar" class="form-control" required>
+                            <option value="">Pilih kamar</option>
+                            <option th:each="km : ${daftarKamar}" th:value="${km.idKamar}" th:text="${km.idKamar} + ' (' +${km.statusKamar} + ')'"></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label class="form-label">Tanggal Mulai Kontrak</label>
+                        <input type="date" name="tanggalMulai" class="form-control" th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Durasi Kontrak</label>
+                        <select name="durasiBulan" class="form-control">
+                            <option value="3">3 bulan</option>
+                            <option value="6">6 bulan</option>
+                            <option value="12" selected>12 bulan</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Harga Sewa per Bulan (Rp)</label>
+                    <input type="number" name="hargaSewa" class="form-control" value="1300000" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('modalBuatKontrak')">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Kontrak</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Perpanjang Kontrak -->
+    <div id="modalPerpanjangKontrak" class="modal-backdrop">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">Perpanjang Kontrak</h3>
+                <button class="icon-btn" onclick="closeModal('modalPerpanjangKontrak')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div style="background:var(--green-bg); border:1px solid #C5E4D3; padding:12px 16px; border-radius:12px; margin-bottom:16px;">
+                <div id="ppNama" style="font-weight:700; color:var(--forest-900); font-size:14px;">Nadia Safitri</div>
+                <div id="ppInfo" style="font-size:12.5px; color:var(--text-secondary); margin-top:2px;">Kamar A05 · berakhir 21 Okt 2026</div>
+            </div>
+            <form id="formPerpanjang" method="post">
+                <div class="form-group">
+                    <label class="form-label">Perpanjang selama</label>
+                    <select name="durasiBulan" class="form-control">
+                        <option value="3">3 bulan</option>
+                        <option value="6">6 bulan</option>
+                        <option value="12" selected>12 bulan</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('modalPerpanjangKontrak')">Batal</button>
+                    <button type="submit" class="btn btn-primary">Perpanjang</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Detail Kontrak -->
+    <div id="modalDetailKontrak" class="modal-backdrop">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">Detail Kontrak</h3>
+                <button class="icon-btn" onclick="closeModal('modalDetailKontrak')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div style="font-size:13.5px;">
+                <div style="display:flex; justify-content:space-between; padding:11px 0; border-bottom:1px solid #F0EDE5;">
+                    <span style="color:var(--text-secondary);">Penghuni</span><strong id="dkNama">-</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; padding:11px 0; border-bottom:1px solid #F0EDE5;">
+                    <span style="color:var(--text-secondary);">Nomor kamar</span><strong id="dkKamar">-</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; padding:11px 0; border-bottom:1px solid #F0EDE5;">
+                    <span style="color:var(--text-secondary);">Mulai kontrak</span><strong id="dkMulai">-</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; padding:11px 0; border-bottom:1px solid #F0EDE5;">
+                    <span style="color:var(--text-secondary);">Berakhir</span><strong id="dkSelesai">-</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; padding:11px 0; border-bottom:1px solid #F0EDE5;">
+                    <span style="color:var(--text-secondary);">Harga sewa</span><strong id="dkHarga">-</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; padding:11px 0;">
+                    <span style="color:var(--text-secondary);">Status</span><strong id="dkStatus">-</strong>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('modalDetailKontrak')">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function bukaDetailKontrak(btn) {
+            document.getElementById('dkNama').innerText = btn.getAttribute('data-nama');
+            document.getElementById('dkKamar').innerText = btn.getAttribute('data-kamar');
+            document.getElementById('dkMulai').innerText = btn.getAttribute('data-mulai');
+            document.getElementById('dkSelesai').innerText = btn.getAttribute('data-selesai');
+            document.getElementById('dkHarga').innerText = 'Rp ' + btn.getAttribute('data-harga') + ' / bulan';
+            document.getElementById('dkStatus').innerText = btn.getAttribute('data-status');
+            openModal('modalDetailKontrak');
+        }
+        function bukaPerpanjangKontrak(btn) {
+            const id = btn.getAttribute('data-id');
+            document.getElementById('ppNama').innerText = btn.getAttribute('data-nama');
+            document.getElementById('ppInfo').innerText = 'Kamar ' + btn.getAttribute('data-kamar') + ' · berakhir ' + btn.getAttribute('data-selesai');
+            document.getElementById('formPerpanjang').action = '/pengelola/kontrak/perpanjang/' + id;
+            openModal('modalPerpanjangKontrak');
+        }
+    </script>
+</section>
+</body>
+</html>

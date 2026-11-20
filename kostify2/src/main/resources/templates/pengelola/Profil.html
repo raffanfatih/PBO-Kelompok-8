@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: shell(~{::section})}">
+<body>
+<section>
+    <div style="display:grid; grid-template-columns: 310px 1fr; gap:22px; align-items:start;">
+        <!-- Kartu Hijau Kiri -->
+        <div style="background:var(--forest-900); color:#FFFFFF; border-radius:20px; padding:28px 24px;">
+            <div style="width:68px; height:68px; border-radius:50%; background:rgba(255,255,255,0.14); border:1px solid rgba(255,255,255,0.22); display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:700; margin-bottom:18px;">
+                BH
+            </div>
+            <div style="font-size:19px; font-weight:700;" th:text="${session.adminNama != null ? session.adminNama : 'Bagas Hartono'}">Bagas Hartono</div>
+            <div style="font-size:12.5px; color:#9DB8A9; margin-top:2px;">Pengelola Utama</div>
+
+            <div style="margin-top:22px; display:flex; flex-direction:column; gap:10px; font-size:13px; color:#D5E5DC;">
+                <div><i class="fa-regular fa-envelope" style="width:20px;"></i> <span th:text="${session.adminEmail != null ? session.adminEmail : 'admin@kostify.id'}">admin@kostify.id</span></div>
+                <div><i class="fa-solid fa-phone" style="width:20px;"></i> <span th:text="${session.adminTelepon != null ? session.adminTelepon : '0812-8800-4321'}">0812-8800-4321</span></div>
+            </div>
+
+            <button class="btn" onclick="openModal('modalEditProfil')" style="width:100%; margin-top:26px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.25); color:#FFFFFF;">
+                <i class="fa-solid fa-pen"></i> Edit Profil
+            </button>
+        </div>
+
+        <!-- Kolom Kanan -->
+        <div style="display:flex; flex-direction:column; gap:20px;">
+            <div class="card">
+                <h3 style="font-size:15.5px; font-weight:700; margin-bottom:14px;">Informasi Akun</h3>
+                <div style="font-size:13.5px;">
+                    <div style="display:flex; justify-content:space-between; padding:12px 14px; background:#FAF9F6; border-radius:10px; margin-bottom:8px;">
+                        <span style="color:var(--text-secondary);">Nama lengkap</span>
+                        <strong th:text="${session.adminNama != null ? session.adminNama : 'Bagas Hartono'}">Bagas Hartono</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; padding:12px 14px; border-bottom:1px solid #F0EDE5;">
+                        <span style="color:var(--text-secondary);">Email</span>
+                        <strong th:text="${session.adminEmail != null ? session.adminEmail : 'admin@kostify.id'}">admin@kostify.id</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; padding:12px 14px; border-bottom:1px solid #F0EDE5;">
+                        <span style="color:var(--text-secondary);">Nomor telepon</span>
+                        <strong th:text="${session.adminTelepon != null ? session.adminTelepon : '0812-8800-4321'}">0812-8800-4321</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; padding:12px 14px; border-bottom:1px solid #F0EDE5;">
+                        <span style="color:var(--text-secondary);">Peran</span>
+                        <strong>Pengelola Utama</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; padding:12px 14px; border-bottom:1px solid #F0EDE5;">
+                        <span style="color:var(--text-secondary);">Bergabung sejak</span>
+                        <strong>10 Sep 2025</strong>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; padding:12px 14px;">
+                        <span style="color:var(--text-secondary);">Nama kos</span>
+                        <strong th:text="${session.kosNama != null ? session.kosNama : 'Kos Griya Asri'}">Kos Griya Asri</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="font-size:15.5px; font-weight:700; margin-bottom:16px;">Ringkasan Pengelolaan</h3>
+                <div class="stats-grid-3" style="margin-bottom:0;">
+                    <div style="background:#F7F5EF; border-radius:14px; padding:18px; text-align:center;">
+                        <div style="font-size:22px; font-weight:700; color:var(--forest-900);" th:text="${totalKamar}">12</div>
+                        <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Kamar</div>
+                    </div>
+                    <div style="background:#F7F5EF; border-radius:14px; padding:18px; text-align:center;">
+                        <div style="font-size:22px; font-weight:700; color:var(--forest-900);" th:text="${totalPenghuni}">10</div>
+                        <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Penghuni aktif</div>
+                    </div>
+                    <div style="background:#F7F5EF; border-radius:14px; padding:18px; text-align:center;">
+                        <div style="font-size:22px; font-weight:700; color:var(--forest-900);" th:text="${totalKontrak}">10</div>
+                        <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Kontrak</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit Profil -->
+    <div id="modalEditProfil" class="modal-backdrop">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Profil Pengelola</h3>
+                <button class="icon-btn" onclick="closeModal('modalEditProfil')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form th:action="@{/pengelola/profil/edit}" method="post">
+                <div class="form-group">
+                    <label class="form-label">Nama Lengkap</label>
+                    <input type="text" name="nama" class="form-control" th:value="${session.adminNama != null ? session.adminNama : 'Bagas Hartono'}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" th:value="${session.adminEmail != null ? session.adminEmail : 'admin@kostify.id'}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nomor Telepon</label>
+                    <input type="text" name="telepon" class="form-control" th:value="${session.adminTelepon != null ? session.adminTelepon : '0812-8800-4321'}" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('modalEditProfil')">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: shell(~{::section})}">
+<body>
+<section>
+    <div class="toolbar-row">
+        <form th:action="@{/pengelola/kamar}" method="get" class="search-box">
+            <i class="fa-solid fa-magnifying-glass" style="color:var(--text-secondary);"></i>
+            <input type="text" name="q" th:value="${keyword}" placeholder="Cari nomor kamar, lokasi, atau fasilitas...">
+        </form>
+        <button class="btn btn-primary" onclick="openModal('modalTambahKamar')">
+            <i class="fa-solid fa-plus"></i> Tambah Kamar
+        </button>
+    </div>
+
+    <div class="filter-pills">
+        <a th:href="@{/pengelola/kamar(status='Semua')}" class="pill" th:classappend="${statusFilter == 'Semua'} ? 'active'">
+            Semua <span class="pill-count" th:text="${countSemua}">12</span>
+        </a>
+        <a th:href="@{/pengelola/kamar(status='Tersedia')}" class="pill" th:classappend="${statusFilter == 'Tersedia'} ? 'active'">
+            Tersedia <span class="pill-count" th:text="${countTersedia}">2</span>
+        </a>
+        <a th:href="@{/pengelola/kamar(status='Terisi')}" class="pill" th:classappend="${statusFilter == 'Terisi'} ? 'active'">
+            Terisi <span class="pill-count" th:text="${countTerisi}">9</span>
+        </a>
+        <a th:href="@{/pengelola/kamar(status='Perbaikan')}" class="pill" th:classappend="${statusFilter == 'Perbaikan'} ? 'active'">
+            Perbaikan <span class="pill-count" th:text="${countPerbaikan}">1</span>
+        </a>
+    </div>
+
+    <div class="table-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Kamar</th>
+                    <th>Lokasi</th>
+                    <th>Luas</th>
+                    <th>Fasilitas</th>
+                    <th>Harga / Bulan</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="k : ${daftarKamar}">
+                    <td style="font-weight:700; color:var(--forest-900);" th:text="${k.idKamar}">A01</td>
+                    <td th:text="${k.lokasi}">Lantai 1 - Sayap A</td>
+                    <td th:text="${k.luasSewaan} + ' m²'">12 m²</td>
+                    <td style="max-width:280px;" th:text="${k.fasilitas}">Kasur, Lemari, Wi-Fi</td>
+                    <td style="font-weight:600;" th:text="'Rp ' + ${#numbers.formatInteger(k.hargaBulanan, 0, 'POINT')}">Rp 1.300.000</td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="${k.statusKamar == 'Tersedia'} ? 'badge-green' : (${k.statusKamar == 'Terisi'} ? 'badge-amber' : 'badge-red')"
+                              th:text="${k.statusKamar}">Terisi</span>
+                    </td>
+                    <td>
+                        <form th:action="@{'/pengelola/kamar/hapus/' + ${k.idKamar}}" method="post" style="display:inline;" onsubmit="return confirm('Hapus kamar ini?')">
+                            <button type="submit" class="icon-btn danger" title="Hapus"><i class="fa-regular fa-trash-can"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="table-footer" th:text="'Menampilkan ' + ${#lists.size(daftarKamar)} + ' data kamar'"></div>
+    </div>
+
+    <!-- Modal Tambah / Edit Kamar -->
+    <div id="modalTambahKamar" class="modal-backdrop">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">Tambah / Perbarui Kamar</h3>
+                <button class="icon-btn" onclick="closeModal('modalTambahKamar')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form th:action="@{/pengelola/kamar/simpan}" method="post">
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label class="form-label">Nomor Kamar (ID)</label>
+                        <input type="text" name="idKamar" class="form-control" placeholder="Contoh: A06" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Luas (m²)</label>
+                        <input type="number" name="luasSewaan" class="form-control" value="12" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Lokasi / Lantai</label>
+                    <input type="text" name="lokasi" class="form-control" placeholder="Lantai 1 - Sayap A" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Fasilitas</label>
+                    <input type="text" name="fasilitas" class="form-control" placeholder="AC, Kamar Mandi Dalam, Wi-Fi" required>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label class="form-label">Harga Sewa / Bulan (Rp)</label>
+                        <input type="number" name="hargaBulanan" class="form-control" value="1500000" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status Kamar</label>
+                        <select name="statusKamar" class="form-control">
+                            <option value="Tersedia">Tersedia</option>
+                            <option value="Terisi">Terisi</option>
+                            <option value="Perbaikan">Perbaikan</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('modalTambahKamar')">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Kamar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+</body>
+</html>

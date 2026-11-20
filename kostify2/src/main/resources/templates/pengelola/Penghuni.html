@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: shell(~{::section})}">
+<body>
+<section>
+    <div class="toolbar-row">
+        <form th:action="@{/pengelola/penghuni}" method="get" class="search-box">
+            <i class="fa-solid fa-magnifying-glass" style="color:var(--text-secondary);"></i>
+            <input type="text" name="q" th:value="${keyword}" placeholder="Cari nama, telepon, atau pekerjaan...">
+        </form>
+        <button class="btn btn-primary" onclick="openModal('modalTambahPenghuni')">
+            <i class="fa-solid fa-plus"></i> Tambah Penghuni
+        </button>
+    </div>
+
+    <div class="table-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Penghuni</th>
+                    <th>Telepon</th>
+                    <th>Pekerjaan</th>
+                    <th>Jenis Kelamin</th>
+                    <th>Mulai Tinggal</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="p : ${daftarPenghuni}">
+                    <td>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div class="avatar-circle" style="width:32px; height:32px; font-size:12px;" th:text="${#strings.substring(p.nama,0,2).toUpperCase()}">RP</div>
+                            <span style="font-weight:600;" th:text="${p.nama}">Rizky Pratama</span>
+                        </div>
+                    </td>
+                    <td th:text="${p.noTelepon}">0812-3456-7801</td>
+                    <td th:text="${p.pekerjaan}">Mahasiswa</td>
+                    <td th:text="${p.jenisKelamin}">Laki-laki</td>
+                    <td th:text="${#temporals.format(p.tanggalDaftar, 'dd MMM yyyy')}">22 Nov 2025</td>
+                    <td>
+                        <div class="action-group">
+                            <button type="button" class="icon-btn" title="Detail"
+                                    th:data-nama="${p.nama}"
+                                    th:data-telp="${p.noTelepon}"
+                                    th:data-kerja="${p.pekerjaan}"
+                                    th:data-jk="${p.jenisKelamin}"
+                                    th:data-daftar="${#temporals.format(p.tanggalDaftar, 'dd MMM yyyy')}"
+                                    onclick="lihatDetailPenghuni(this)">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                            <form th:action="@{'/pengelola/penghuni/hapus/' + ${p.idPenghuni}}" method="post" style="display:inline;" onsubmit="return confirm('Hapus data penghuni ini?')">
+                                <button type="submit" class="icon-btn danger" title="Hapus"><i class="fa-regular fa-trash-can"></i></button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="table-footer" th:text="'Menampilkan ' + ${#lists.size(daftarPenghuni)} + ' dari ' + ${totalPenghuni} + ' data'"></div>
+    </div>
+
+    <!-- Modal Tambah Penghuni -->
+    <div id="modalTambahPenghuni" class="modal-backdrop">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">Tambah Penghuni</h3>
+                <button class="icon-btn" onclick="closeModal('modalTambahPenghuni')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form th:action="@{/pengelola/penghuni/simpan}" method="post">
+                <div class="form-group">
+                    <label class="form-label">Nama Lengkap</label>
+                    <input type="text" name="nama" class="form-control" placeholder="Contoh: Budi Santoso" required>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label class="form-label">Nomor Telepon</label>
+                        <input type="text" name="noTelepon" class="form-control" placeholder="0812 3456 7890" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Pekerjaan</label>
+                        <input type="text" name="pekerjaan" class="form-control" placeholder="Mahasiswa / Karyawan" required>
+                    </div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label class="form-label">Nomor Kamar (Opsional)</label>
+                        <select name="idKamar" class="form-control">
+                            <option value="">Pilih kamar kosong</option>
+                            <option th:each="km : ${kamarKosong}" th:value="${km.idKamar}" th:text="${km.idKamar} + ' - Rp ' + ${km.hargaBulanan}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tanggal Mulai Tinggal</label>
+                        <input type="date" name="tanggalDaftar" class="form-control" th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Jenis Kelamin</label>
+                    <select name="jenisKelamin" class="form-control">
+                        <option value="Laki-laki">Laki-laki</option>
+                        <option value="Perempuan">Perempuan</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('modalTambahPenghuni')">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Penghuni</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Detail Penghuni -->
+    <div id="modalDetailPenghuni" class="modal-backdrop">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">Detail Penghuni</h3>
+                <button class="icon-btn" onclick="closeModal('modalDetailPenghuni')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div style="display:flex; align-items:center; gap:14px; margin-bottom:18px;">
+                <div id="dpInisial" class="avatar-circle" style="width:46px; height:46px; font-size:16px;">RP</div>
+                <div>
+                    <div id="dpNama" style="font-size:16px; font-weight:700;">Rizky Pratama</div>
+                    <span class="badge badge-green" style="margin-top:4px;">Aktif</span>
+                </div>
+            </div>
+            <div style="border-top:1px solid var(--border-soft); font-size:13.5px;">
+                <div style="display:flex; justify-content:space-between; padding:11px 0; border-bottom:1px solid #F0EDE5;">
+                    <span style="color:var(--text-secondary);">Nomor telepon</span>
+                    <strong id="dpTelp">-</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; padding:11px 0; border-bottom:1px solid #F0EDE5;">
+                    <span style="color:var(--text-secondary);">Pekerjaan</span>
+                    <strong id="dpKerja">-</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; padding:11px 0; border-bottom:1px solid #F0EDE5;">
+                    <span style="color:var(--text-secondary);">Jenis kelamin</span>
+                    <strong id="dpJk">-</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; padding:11px 0;">
+                    <span style="color:var(--text-secondary);">Mulai tinggal</span>
+                    <strong id="dpDaftar">-</strong>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('modalDetailPenghuni')">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function lihatDetailPenghuni(btn) {
+            const nama = btn.getAttribute('data-nama');
+            document.getElementById('dpInisial').innerText = nama.substring(0, 2).toUpperCase();
+            document.getElementById('dpNama').innerText = nama;
+            document.getElementById('dpTelp').innerText = btn.getAttribute('data-telp');
+            document.getElementById('dpKerja').innerText = btn.getAttribute('data-kerja');
+            document.getElementById('dpJk').innerText = btn.getAttribute('data-jk');
+            document.getElementById('dpDaftar').innerText = btn.getAttribute('data-daftar');
+            openModal('modalDetailPenghuni');
+        }
+    </script>
+</section>
+</body>
+</html>

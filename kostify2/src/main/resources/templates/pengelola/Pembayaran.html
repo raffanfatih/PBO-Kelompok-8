@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: shell(~{::section})}">
+<body>
+<section>
+    <div class="stats-grid-3">
+        <div class="card">
+            <div class="stat-header">
+                <span>Pembayaran Diterima</span>
+                <div class="stat-icon" style="background:var(--green-bg); color:var(--green-text);"><i class="fa-solid fa-money-bill-wave"></i></div>
+            </div>
+            <div class="stat-value" th:text="'Rp ' + ${#numbers.formatInteger(totalDiterima, 0, 'POINT')}">Rp 89.700.000</div>
+            <div class="stat-sub" th:text="${countLunas} + ' tagihan lunas'">55 tagihan lunas</div>
+        </div>
+
+        <div class="card">
+            <div class="stat-header">
+                <span>Belum Dibayar</span>
+                <div class="stat-icon" style="background:var(--amber-bg); color:var(--amber-text);"><i class="fa-regular fa-credit-card"></i></div>
+            </div>
+            <div class="stat-value" th:text="'Rp ' + ${#numbers.formatInteger(totalBelumDibayar, 0, 'POINT')}">Rp 0</div>
+            <div class="stat-sub" th:text="${countBelumLunas} + ' tagihan belum jatuh tempo'">0 tagihan belum jatuh tempo</div>
+        </div>
+
+        <div class="card">
+            <div class="stat-header">
+                <span>Terlambat</span>
+                <div class="stat-icon" style="background:var(--red-bg); color:var(--red-text);"><i class="fa-regular fa-clock"></i></div>
+            </div>
+            <div class="stat-value" th:text="'Rp ' + ${#numbers.formatInteger(totalTerlambat, 0, 'POINT')}">Rp 6.200.000</div>
+            <div class="stat-sub" th:text="${countTerlambat} + ' tagihan lewat jatuh tempo'">4 tagihan lewat jatuh tempo</div>
+        </div>
+    </div>
+
+    <div class="toolbar-row">
+        <form th:action="@{/pengelola/pembayaran}" method="get" class="search-box">
+            <i class="fa-solid fa-magnifying-glass" style="color:var(--text-secondary);"></i>
+            <input type="text" name="q" th:value="${keyword}" placeholder="Cari penghuni atau nomor kamar">
+        </form>
+        <button class="btn btn-primary" onclick="openModal('modalTambahTagihan')">
+            <i class="fa-solid fa-plus"></i> Tambah Tagihan
+        </button>
+    </div>
+
+    <div class="filter-pills">
+        <a th:href="@{/pengelola/pembayaran(status='Semua')}" class="pill" th:classappend="${statusFilter == 'Semua'} ? 'active'">
+            Semua <span class="pill-count" th:text="${countSemua}">10</span>
+        </a>
+        <a th:href="@{/pengelola/pembayaran(status='Lunas')}" class="pill" th:classappend="${statusFilter == 'Lunas'} ? 'active'">
+            Lunas <span class="pill-count" th:text="${countLunas}">7</span>
+        </a>
+        <a th:href="@{/pengelola/pembayaran(status='Belum Lunas')}" class="pill" th:classappend="${statusFilter == 'Belum Lunas'} ? 'active'">
+            Belum Lunas <span class="pill-count" th:text="${countBelumLunas}">0</span>
+        </a>
+        <a th:href="@{/pengelola/pembayaran(status='Terlambat')}" class="pill" th:classappend="${statusFilter == 'Terlambat'} ? 'active'">
+            Terlambat <span class="pill-count" th:text="${countTerlambat}">3</span>
+        </a>
+    </div>
+
+    <div class="table-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Penghuni</th>
+                    <th>Kamar</th>
+                    <th>Periode</th>
+                    <th>Jatuh Tempo</th>
+                    <th>Tagihan</th>
+                    <th>Dibayar</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="pb : ${daftarPembayaran}">
+                    <td style="font-weight:600;" th:text="${pb.kontrak.penghuni.nama}">Andi Wijaya</td>
+                    <td th:text="${pb.kontrak.kamar.idKamar}">A03</td>
+                    <td th:text="${#temporals.format(pb.periodeBulan, 'MMMM yyyy', new java.util.Locale('id','ID'))}">November 2026</td>
+                    <td th:text="${#temporals.format(pb.tanggalJatuhTempo, 'dd MMM yyyy')}">5 Nov 2026</td>
+                    <td style="font-weight:600;" th:text="'Rp ' + ${#numbers.formatInteger(pb.jumlahTagihan, 0, 'POINT')}">Rp 1.300.000</td>
+                    <td th:text="${pb.tanggalBayar != null ? #temporals.format(pb.tanggalBayar, 'dd MMM yyyy') : '-'}">5 Nov 2026</td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="${pb.statusPembayaran == 'Lunas'} ? 'badge-green' : (${pb.statusPembayaran == 'Terlambat'} ? 'badge-red' : 'badge-amber')"
+                              th:text="${pb.statusPembayaran}">Lunas</span>
+                    </td>
+                    <td>
+                        <form th:if="${pb.statusPembayaran != 'Lunas'}" th:action="@{'/pengelola/pembayaran/catat-bayar/' + ${pb.idPembayaran}}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-soft-green">Catat Bayar</button>
+                        </form>
+                        <span th:if="${pb.statusPembayaran == 'Lunas'}" style="color:var(--text-secondary); font-size:12.5px;">Terverifikasi</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="table-footer" th:text="'Menampilkan ' + ${#lists.size(daftarPembayaran)} + ' dari ' + ${countSemua} + ' data'"></div>
+    </div>
+
+    <!-- Modal Tambah Tagihan -->
+    <div id="modalTambahTagihan" class="modal-backdrop">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">Tambah Tagihan Baru</h3>
+                <button class="icon-btn" onclick="closeModal('modalTambahTagihan')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form th:action="@{/pengelola/pembayaran/tambah}" method="post">
+                <div class="form-group">
+                    <label class="form-label">Kontrak Penghuni</label>
+                    <select name="idKontrak" class="form-control" required>
+                        <option th:each="k : ${daftarKontrak}" th:value="${k.idKontrak}" th:text="${k.penghuni.nama} + ' - Kamar ' + ${k.kamar.idKamar}"></option>
+                    </select>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label class="form-label">Periode Bulan</label>
+                        <input type="date" name="periodeBulan" class="form-control" th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-01')}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tanggal Jatuh Tempo</label>
+                        <input type="date" name="tanggalJatuhTempo" class="form-control" th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-05')}" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Jumlah Tagihan (Rp)</label>
+                    <input type="number" name="jumlahTagihan" class="form-control" value="1300000" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('modalTambahTagihan')">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Tagihan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+</body>
+</html>

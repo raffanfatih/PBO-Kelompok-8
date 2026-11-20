@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: shell(~{::section})}">
+<body>
+<section>
+    <div class="toolbar-row">
+        <form th:action="@{/pengelola/keluhan}" method="get" style="display:flex; gap:12px; flex-wrap:wrap;">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass" style="color:var(--text-secondary);"></i>
+                <input type="text" name="q" th:value="${keyword}" placeholder="Cari penghuni, kamar, atau isi keluhan">
+            </div>
+            <select name="kategori" class="form-control" style="width:190px;" onchange="this.form.submit()">
+                <option value="Semua" th:selected="${kategoriFilter == 'Semua'}">Semua kategori</option>
+                <option value="Kebersihan" th:selected="${kategoriFilter == 'Kebersihan'}">Kebersihan</option>
+                <option value="Air" th:selected="${kategoriFilter == 'Air'}">Air</option>
+                <option value="Fasilitas" th:selected="${kategoriFilter == 'Fasilitas'}">Fasilitas</option>
+                <option value="Listrik" th:selected="${kategoriFilter == 'Listrik'}">Listrik</option>
+                <option value="Keamanan" th:selected="${kategoriFilter == 'Keamanan'}">Keamanan</option>
+                <option value="Lainnya" th:selected="${kategoriFilter == 'Lainnya'}">Lainnya</option>
+            </select>
+        </form>
+    </div>
+
+    <div class="filter-pills">
+        <a th:href="@{/pengelola/keluhan(status='Semua')}" class="pill" th:classappend="${statusFilter == 'Semua'} ? 'active'">
+            Semua <span class="pill-count" th:text="${countSemua}">8</span>
+        </a>
+        <a th:href="@{/pengelola/keluhan(status='Menunggu')}" class="pill" th:classappend="${statusFilter == 'Menunggu'} ? 'active'">
+            Menunggu <span class="pill-count" th:text="${countMenunggu}">3</span>
+        </a>
+        <a th:href="@{/pengelola/keluhan(status='Diproses')}" class="pill" th:classappend="${statusFilter == 'Diproses'} ? 'active'">
+            Diproses <span class="pill-count" th:text="${countDiproses}">2</span>
+        </a>
+        <a th:href="@{/pengelola/keluhan(status='Selesai')}" class="pill" th:classappend="${statusFilter == 'Selesai'} ? 'active'">
+            Selesai <span class="pill-count" th:text="${countSelesai}">3</span>
+        </a>
+    </div>
+
+    <div class="table-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Penghuni</th>
+                    <th>Kamar</th>
+                    <th>Kategori</th>
+                    <th>Deskripsi</th>
+                    <th>Tanggal</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="kl : ${daftarKeluhan}">
+                    <td style="font-weight:600; white-space:nowrap;" th:text="${kl.kontrak.penghuni.nama}">Andi Wijaya</td>
+                    <td th:text="${kl.kontrak.kamar.idKamar}">A03</td>
+                    <td th:text="${kl.kategori}">Kebersihan</td>
+                    <td style="max-width:340px; line-height:1.45;" th:text="${kl.deskripsi}">Deskripsi keluhan</td>
+                    <td style="white-space:nowrap;" th:text="${#temporals.format(kl.tanggalKeluhan, 'dd MMM yyyy')}">10 Nov 2026</td>
+                    <td>
+                        <span class="badge"
+                              th:classappend="${kl.statusPenanganan == 'Selesai'} ? 'badge-green' : 'badge-amber'"
+                              th:text="${kl.statusPenanganan}">Menunggu</span>
+                    </td>
+                    <td>
+                        <button type="button" class="icon-btn" title="Tindak Lanjut"
+                                th:data-id="${kl.idKeluhan}"
+                                th:data-nama="${kl.kontrak.penghuni.nama}"
+                                th:data-kamar="${kl.kontrak.kamar.idKamar}"
+                                th:data-kat="${kl.kategori}"
+                                th:data-desk="${kl.deskripsi}"
+                                th:data-status="${kl.statusPenanganan}"
+                                onclick="bukaKeluhanModal(this)">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="table-footer" th:text="'Menampilkan ' + ${#lists.size(daftarKeluhan)} + ' dari ' + ${countSemua} + ' data'"></div>
+    </div>
+
+    <!-- Modal Detail & Ubah Status Keluhan -->
+    <div id="modalKeluhan" class="modal-backdrop">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">Detail Keluhan Penghuni</h3>
+                <button class="icon-btn" onclick="closeModal('modalKeluhan')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div style="background:#FAF9F6; border:1px solid var(--border-soft); padding:14px; border-radius:12px; margin-bottom:16px; font-size:13.5px;">
+                <div style="font-weight:700;" id="klHeader">Andi Wijaya · Kamar A03</div>
+                <div style="font-size:12px; color:var(--text-secondary); margin:4px 0 10px 0;" id="klKat">Kategori: Kebersihan</div>
+                <p id="klDesk" style="line-height:1.5; color:var(--text-primary);"></p>
+            </div>
+            <form id="formUbahKeluhan" method="post">
+                <div class="form-group">
+                    <label class="form-label">Perbarui Status Penanganan</label>
+                    <select id="klStatusSelect" name="statusBaru" class="form-control">
+                        <option value="Menunggu">Menunggu</option>
+                        <option value="Diproses">Diproses</option>
+                        <option value="Selesai">Selesai</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('modalKeluhan')">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Simpan Status</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function bukaKeluhanModal(btn) {
+            const id = btn.getAttribute('data-id');
+            document.getElementById('klHeader').innerText = btn.getAttribute('data-nama') + ' · Kamar ' + btn.getAttribute('data-kamar');
+            document.getElementById('klKat').innerText = 'Kategori: ' + btn.getAttribute('data-kat');
+            document.getElementById('klDesk').innerText = btn.getAttribute('data-desk');
+            document.getElementById('klStatusSelect').value = btn.getAttribute('data-status');
+            document.getElementById('formUbahKeluhan').action = '/pengelola/keluhan/ubah-status/' + id;
+            openModal('modalKeluhan');
+        }
+    </script>
+</section>
+</body>
+</html>

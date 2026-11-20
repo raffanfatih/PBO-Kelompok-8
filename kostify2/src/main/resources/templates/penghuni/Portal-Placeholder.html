@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Portal Penghuni — Kostify</title>
+    <link rel="stylesheet" th:href="@{/css/kostify.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body style="display:flex; align-items:center; justify-content:center; min-height:100vh; background:var(--cream-bg);">
+
+<div class="card" style="max-width:460px; text-align:center; padding:36px;">
+    <div style="width:52px; height:52px; border-radius:14px; background:var(--green-bg); color:var(--forest-900); display:flex; align-items:center; justify-content:center; font-size:22px; margin:0 auto 16px auto;">
+        <i class="fa-solid fa-user-check"></i>
+    </div>
+    <h2 style="font-size:20px; font-weight:700; color:var(--forest-900);">Portal Penghuni Kostify</h2>
+    <p style="font-size:13.5px; color:var(--text-secondary); line-height:1.55; margin:10px 0 22px 0;">
+        Ruang modul untuk peran <strong>Penghuni</strong> (lihat kontrak aktif, cek status tagihan bulanan, dan kirim keluhan kamar) sudah disiapkan pada arsitektur proyek ini.
+    </p>
+    <a th:href="@{/login}" class="btn btn-primary" style="width:100%;">Kembali ke Login Pengelola</a>
+</div>
+
+</body>
+</html>

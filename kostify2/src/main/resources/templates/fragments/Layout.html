@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="shell(content)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} + ' — Kostify'">Kostify</title>
+    <link rel="stylesheet" th:href="@{/css/kostify.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<aside class="sidebar">
+    <div>
+        <div class="brand-box">
+            <div class="brand-icon"><i class="fa-solid fa-house-chimney"></i></div>
+            <div>
+                <div class="brand-title">Kostify</div>
+                <div class="brand-sub" th:text="${session.kosNama != null ? session.kosNama : 'Kos Griya Asri'}">Kos Griya Asri</div>
+            </div>
+        </div>
+
+        <div class="menu-label">MENU</div>
+        <ul class="nav-list">
+            <li>
+                <a th:href="@{/pengelola/beranda}" class="nav-link" th:classappend="${activeMenu == 'beranda'} ? 'active'">
+                    <i class="fa-solid fa-border-all"></i> <span>Beranda</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/pengelola/kamar}" class="nav-link" th:classappend="${activeMenu == 'kamar'} ? 'active'">
+                    <i class="fa-regular fa-building"></i> <span>Kamar</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/pengelola/penghuni}" class="nav-link" th:classappend="${activeMenu == 'penghuni'} ? 'active'">
+                    <i class="fa-solid fa-user-group"></i> <span>Penghuni</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/pengelola/kontrak}" class="nav-link" th:classappend="${activeMenu == 'kontrak'} ? 'active'">
+                    <i class="fa-regular fa-file-lines"></i> <span>Kontrak</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/pengelola/pembayaran}" class="nav-link" th:classappend="${activeMenu == 'pembayaran'} ? 'active'">
+                    <i class="fa-regular fa-credit-card"></i> <span>Pembayaran</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/pengelola/keluhan}" class="nav-link" th:classappend="${activeMenu == 'keluhan'} ? 'active'">
+                    <i class="fa-regular fa-comment-dots"></i> <span>Keluhan</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="sidebar-bottom">
+        <ul class="nav-list">
+            <li>
+                <a th:href="@{/pengelola/profil}" class="nav-link" th:classappend="${activeMenu == 'profil'} ? 'active'">
+                    <i class="fa-regular fa-user"></i> <span>Profil Pengelola</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/pengelola/pengaturan}" class="nav-link" th:classappend="${activeMenu == 'pengaturan'} ? 'active'">
+                    <i class="fa-solid fa-gear"></i> <span>Pengaturan</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/keluar}" class="nav-link">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Keluar</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</aside>
+
+<div class="main-wrapper">
+    <header class="topbar">
+        <div>
+            <h1 class="page-title" th:text="${pageTitle}">Beranda</h1>
+            <div class="page-date">
+                <i class="fa-regular fa-calendar"></i>
+                <span th:text="${#temporals.format(#temporals.createNow(), 'EEEE, dd MMMM yyyy', new java.util.Locale('id', 'ID'))}">Jumat, 20 November 2026</span>
+            </div>
+        </div>
+
+        <div class="topbar-right">
+            <a th:href="@{/pengelola/kontrak(status='Akan Berakhir')}" class="notif-btn" title="Notifikasi">
+                <i class="fa-regular fa-bell"></i>
+                <span class="notif-badge">3</span>
+            </a>
+            <a th:href="@{/pengelola/profil}" class="profile-pill">
+                <div class="avatar-circle">BH</div>
+                <div>
+                    <div style="font-size: 13px; font-weight: 700;" th:text="${session.adminNama != null ? session.adminNama : 'Bagas Hartono'}">Bagas Hartono</div>
+                    <div style="font-size: 11px; color: var(--text-secondary);">Pengelola Utama</div>
+                </div>
+            </a>
+        </div>
+    </header>
+
+    <main class="content-area">
+        <div th:if="${pesanSukses}" style="background:#E6F4EC; border:1px solid #B7DFC8; color:#1B7A48; padding:12px 18px; border-radius:12px; margin-bottom:18px; font-size:13.5px; font-weight:600;">
+            <i class="fa-solid fa-circle-check"></i> <span th:text="${pesanSukses}"></span>
+        </div>
+
+        <div th:replace="${content}"></div>
+    </main>
+</div>
+
+<script>
+    function openModal(id) {
+        document.getElementById(id).classList.add('open');
+    }
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('open');
+    }
+</script>
+</body>
+</html>
