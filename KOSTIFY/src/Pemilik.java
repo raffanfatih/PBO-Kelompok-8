@@ -12,7 +12,7 @@ class Pemilik extends Pengguna implements KelolaFasilitas, KelolaKontrak {
     @Override
     public double totalTagihan(int hargaPerBulan, int lamaSewa) {
         double total = hargaPerBulan * lamaSewa;
-        return total - (total * 0.05); 
+        return total; 
     }
 
     @Override

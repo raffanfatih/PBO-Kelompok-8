@@ -8,7 +8,7 @@ public class Main {
         pakBudi.kategoriKamar(1500000); 
         
         double pendapatanBersih = pakBudi.totalTagihan(1500000, 3);
-        System.out.println("Perkiraan Pendapatan Bersih (3 bulan): Rp " + pendapatanBersih);
+        System.out.println("Perkiraan Pendapatan (3 bulan): Rp " + pendapatanBersih);
         
         pakBudi.cekStatusMember(15);
         
