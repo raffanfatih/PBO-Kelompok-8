@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.kostify2.0</groupId>
-	<artifactId>kostify2</artifactId>
+	<artifactId>PJBL_KOSTIFY</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>kostify2</name>
+	<name>PJBL_KOSTIFY</name>
 	<description/>
 	<url/>
 	<licenses>
